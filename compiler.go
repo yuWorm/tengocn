@@ -599,6 +599,12 @@ func (c *Compiler) Compile(node parser.Node) error {
 		// update second jump offset
 		curPos = len(c.currentInstructions())
 		c.changeOperand(jumpPos2, curPos)
+	case *parser.HasValueExpr:
+		// has_value 检查就是检查表达式的真假值
+		// 直接编译表达式即可，VM会自动处理真假值判断
+		return c.Compile(node.Expr)
+	case *parser.IsExpr:
+		return c.compileIsExpr(node)
 	}
 	return nil
 }
@@ -631,8 +637,8 @@ func (c *Compiler) SetImportDir(dir string) {
 //
 // Use this method if you want other source file extension than ".tengo".
 //
-//     // this will search for *.tengo, *.foo, *.bar
-//     err := c.SetImportFileExt(".tengo", ".foo", ".bar")
+//	// this will search for *.tengo, *.foo, *.bar
+//	err := c.SetImportFileExt(".tengo", ".foo", ".bar")
 //
 // This function requires at least one argument, since it will replace the
 // current list of extension name.
@@ -1377,4 +1383,34 @@ func tracec(c *Compiler, msg string) *Compiler {
 func untracec(c *Compiler) {
 	c.indent--
 	c.printTrace("}")
+}
+
+// compileIsExpr 编译 is 表达式
+func (c *Compiler) compileIsExpr(node *parser.IsExpr) error {
+	// 检查右侧是否为特殊的布尔值标识符
+	if ident, ok := node.RHS.(*parser.Ident); ok {
+		switch ident.Name {
+		case "True":
+			// x is True -> 直接检查 x 的真假值
+			return c.Compile(node.LHS)
+		case "False":
+			// x is False -> 检查 x 的真假值然后取反
+			if err := c.Compile(node.LHS); err != nil {
+				return err
+			}
+			c.emit(node, parser.OpLNot)
+			return nil
+		}
+	}
+
+	// 对于其他情况，编译为等值比较
+	if err := c.Compile(node.LHS); err != nil {
+		return err
+	}
+	if err := c.Compile(node.RHS); err != nil {
+		return err
+	}
+	c.emit(node, parser.OpEqual)
+
+	return nil
 }

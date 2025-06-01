@@ -1,0 +1,54 @@
+// example_usage.tengo - 新语法使用示例
+
+// 1. 使用 has_value 检查
+x := 42
+if x has_value {
+    print("x 有值: ", x)
+}
+
+y := undefined
+if y has_value {
+    print("y 有值")
+} else {
+    print("y 没有值")
+}
+
+// 2. 使用 is True/False 检查
+success := true
+if success is True {
+    print("操作成功")
+}
+
+failed := false
+if failed is False {
+    print("没有失败")
+}
+
+// 3. 使用 is 进行值比较
+status := 0
+if status is 0 {
+    print("状态为零")
+}
+
+name := "admin"
+if name is "admin" {
+    print("管理员用户")
+}
+
+// 4. 组合使用
+config := {user: "admin", port: 8080}
+if config has_value && config.user is "admin" {
+    print("管理员配置已加载")
+}
+
+// 5. 在函数中使用
+check_value := func(val) {
+    if val has_value {
+        return "有值: " + string(val)
+    } else {
+        return "无值"
+    }
+}
+
+print(check_value(100))       // 输出: 有值: 100
+print(check_value(undefined)) // 输出: 无值

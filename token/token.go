@@ -84,6 +84,8 @@ const (
 	In
 	Undefined
 	Import
+	HasValue
+	Is
 	_keywordEnd
 )
 
@@ -143,21 +145,23 @@ var tokens = [...]string{
 	Semicolon:    ";",
 	Colon:        ":",
 	Question:     "?",
-	Break:        "break",
-	Continue:     "continue",
-	Else:         "else",
-	For:          "for",
-	Func:         "func",
+	Break:        "跳出循环",
+	Continue:     "结束本次循环",
+	Else:         "否则",
+	For:          "循环",
+	Func:         "方法",
 	Error:        "error",
 	Immutable:    "immutable",
-	If:           "if",
-	Return:       "return",
-	Export:       "export",
-	True:         "true",
-	False:        "false",
-	In:           "in",
-	Undefined:    "undefined",
-	Import:       "import",
+	If:           "如果",
+	Return:       "返回",
+	Export:       "导出",
+	True:         "真",
+	False:        "假",
+	In:           "于",
+	Undefined:    "未定义",
+	Is:           "为",
+	HasValue:     "有值",
+	Import:       "导入",
 }
 
 func (tok Token) String() string {
@@ -184,7 +188,7 @@ func (tok Token) Precedence() int {
 		return 1
 	case LAnd:
 		return 2
-	case Equal, NotEqual, Less, LessEq, Greater, GreaterEq:
+	case Equal, NotEqual, Less, LessEq, Greater, GreaterEq, Is:
 		return 3
 	case Add, Sub, Or, Xor:
 		return 4

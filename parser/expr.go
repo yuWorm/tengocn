@@ -599,3 +599,50 @@ func (e *UndefinedLit) End() Pos {
 func (e *UndefinedLit) String() string {
 	return "undefined"
 }
+
+// parser/expr.go - 在文件末尾添加新的AST节点
+
+// HasValueExpr represents a has_value expression.
+type HasValueExpr struct {
+	Expr        Expr
+	HasValuePos Pos
+}
+
+func (e *HasValueExpr) exprNode() {}
+
+// Pos returns the position of first character belonging to the node.
+func (e *HasValueExpr) Pos() Pos {
+	return e.Expr.Pos()
+}
+
+// End returns the position of first character immediately after the node.
+func (e *HasValueExpr) End() Pos {
+	return e.HasValuePos + 9 // len("has_value") == 9
+}
+
+func (e *HasValueExpr) String() string {
+	return e.Expr.String() + " has_value"
+}
+
+// IsExpr represents an is comparison expression.
+type IsExpr struct {
+	LHS   Expr
+	RHS   Expr
+	IsPos Pos
+}
+
+func (e *IsExpr) exprNode() {}
+
+// Pos returns the position of first character belonging to the node.
+func (e *IsExpr) Pos() Pos {
+	return e.LHS.Pos()
+}
+
+// End returns the position of first character immediately after the node.
+func (e *IsExpr) End() Pos {
+	return e.RHS.End()
+}
+
+func (e *IsExpr) String() string {
+	return e.LHS.String() + " is " + e.RHS.String()
+}

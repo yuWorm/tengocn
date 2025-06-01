@@ -162,6 +162,16 @@ func (p *Parser) parseExpr() Expr {
 
 	expr := p.parseBinaryExpr(token.LowestPrec + 1)
 
+	// 检查 has_value 后缀
+	if p.token == token.HasValue {
+		hasValuePos := p.pos
+		p.next()
+		return &HasValueExpr{
+			Expr:        expr,
+			HasValuePos: hasValuePos,
+		}
+	}
+
 	// ternary conditional expression
 	if p.token == token.Question {
 		return p.parseCondExpr(expr)
@@ -184,13 +194,22 @@ func (p *Parser) parseBinaryExpr(prec1 int) Expr {
 
 		pos := p.expect(op)
 
-		y := p.parseBinaryExpr(prec + 1)
-
-		x = &BinaryExpr{
-			LHS:      x,
-			RHS:      y,
-			Token:    op,
-			TokenPos: pos,
+		// 特殊处理 is 操作符
+		if op == token.Is {
+			y := p.parseBinaryExpr(prec + 1)
+			x = &IsExpr{
+				LHS:   x,
+				RHS:   y,
+				IsPos: pos,
+			}
+		} else {
+			y := p.parseBinaryExpr(prec + 1)
+			x = &BinaryExpr{
+				LHS:      x,
+				RHS:      y,
+				Token:    op,
+				TokenPos: pos,
+			}
 		}
 	}
 }

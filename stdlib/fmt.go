@@ -11,6 +11,10 @@ var fmtModule = map[string]tengo.Object{
 	"printf":  &tengo.UserFunction{Name: "printf", Value: fmtPrintf},
 	"println": &tengo.UserFunction{Name: "println", Value: fmtPrintln},
 	"sprintf": &tengo.UserFunction{Name: "sprintf", Value: fmtSprintf},
+	"打印":      &tengo.UserFunction{Name: "打印", Value: fmtPrint},
+	"格式化打印":   &tengo.UserFunction{Name: "格式化打印", Value: fmtPrintf},
+	"换行打印":    &tengo.UserFunction{Name: "换行打印", Value: fmtPrintln},
+	"格式化文本":   &tengo.UserFunction{Name: "格式化文本", Value: fmtSprintf},
 }
 
 func fmtPrint(args ...tengo.Object) (ret tengo.Object, err error) {
